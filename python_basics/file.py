@@ -7,6 +7,17 @@ f.write("반갑습니다"+"\n")
 f.write("저는 최홍석 입니다"+"\n")
 f.write("다음에 또 만나요"+"\n")
 # w나,a로 파일에 쓰기가 가능할 떄 write 매서드로 내용 적을수 있음.
+f.close()
+
+f = open("test.txt", "r", encoding = "UTF-8")
+
+line = f.readline()
+lines = f.readlines()
+
+
+print(line)
+print(lines)
+
 
 f.close()
 # 불러온 파일을 닫아줌
