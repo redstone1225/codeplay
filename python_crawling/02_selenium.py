@@ -24,5 +24,5 @@ for i in range(len(t3_title)):
 
 
 
-# for j in top10[:10]:
-#     print(j.text)
+for j in top10[:10]:
+    print(j.text)
