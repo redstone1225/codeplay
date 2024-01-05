@@ -1,7 +1,7 @@
 import pygame
 import sys
 
-# Pygame 초기화
+# Pygame 초 기화
 pygame.init()
 
 # 게임 화면 설정
