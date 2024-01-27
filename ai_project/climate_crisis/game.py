@@ -1,64 +1,109 @@
 import pygame
 import sys
+import time
 
-# Pygame 초 기화
+# 파이게임 초기화
 pygame.init()
 
-# 게임 화면 설정
-win_width, win_height = 640, 480
-win = pygame.display.set_mode((win_width, win_height))
-pygame.display.set_caption("Survival Game")
+# 한글 폰트 설정
+font_path = "ai_project/climate_crisis/src/NanumGothicEco.ttf"  # 여기에 사용하고자 하는 폰트 파일의 경로를 입력하세요
+font_size = 24
+font = pygame.font.Font(font_path, font_size)
 
 # 색깔 정의
-white = (255, 255, 255)
-blue = (0, 0, 255)
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
 
-# 플레이어 캐릭터
-player_width, player_height = 50, 50
-player_x, player_y = win_width // 2, win_height - player_height - 10
-player_vel = 5
-jump_count = 10
-is_jump = False
+# 화면 크기 설정
+screen_size = (1200, 600)
+screen = pygame.display.set_mode(screen_size)
+pygame.display.set_caption("O/X 퀴즈 게임")
 
-# 해수면 초기 값 설정
-sea_width, sea_height = win_width, 20
-sea_level = sea_height  # 해수면 높이 초기화
-sea_speed = 0.2  # 해수면 높이 변화 속도
+def draw_text(text, color, position):
+    text_surface = font.render(text, True, color)
+    screen.blit(text_surface, position)
 
-# 시간 추적 변수
-start_time = pygame.time.get_ticks()
+def display_intro():
+    screen.fill(WHITE)
+    draw_text("지구가 환경오염과 지구 온난화 때문에 기온이 상승하고 있다.", BLACK, (50, 50))
+    draw_text("기온이 상승되면 무슨 일이 발생하는지 알아보기 위해 간단한 O/X 퀴즈를 해보자!", BLACK, (50, 100))
+    draw_text("O,X 게임을 시작하려면 ENTER를 누르시오.", BLACK, (50, 150))
+    pygame.display.flip()
 
-# 게임 루프
-running = True
-while running:
-    # 화면 클리어
-    win.fill(white)
+    waiting_for_enter = True
+    while waiting_for_enter:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    waiting_for_enter = False
 
-    # 이벤트 처리
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+def ask_question(question, correct_answer):
+    user_answer = None
 
-    # 게임 시작 후 6초가 경과하면 해수면이 나타남
-    current_time = pygame.time.get_ticks()
-    elapsed_time = (current_time - start_time) / 1000  # milliseconds를 seconds로 변환
-    if elapsed_time >= 6:
-        if sea_level < win_height:
-            sea_level += sea_speed  # 해수면 높이 증가
+    while user_answer not in ['O', 'X']:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_o:
+                    user_answer = 'O'
+                elif event.key == pygame.K_x:
+                    user_answer = 'X'
+        
+        screen.fill(WHITE)
+        draw_text(question, BLACK, (50, 50))
+        draw_text("정답을 입력하세요 (O/X):", BLACK, (50, 150))
+        pygame.display.flip()
+
+    return user_answer == correct_answer
+
+def play_game():
+    score = 0
+
+    questions = [
+        ("지구의 온난화로 인해 해수면이 상승한다. (O/X)", "O"),
+        ("해안가에 상어가 더 많이 출몰할 것이다. (O/X)", "O"),
+        (" (O/X)", "X"),
+        (" (O/X)", "X"),
+        (" (O/X)", "X"),
+    ]
+
+    for question, correct_answer in questions:
+        user_answer = None
+        while user_answer not in ['O', 'X']:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_o:
+                        user_answer = 'O'
+                    elif event.key == pygame.K_x:
+                        user_answer = 'X'
+
+            screen.fill(WHITE)
+            draw_text(question, BLACK, (50, 50))
+            draw_text("정답을 입력하세요 (O/X):", BLACK, (50, 150))
+            pygame.display.flip()
+
+        if user_answer == correct_answer:
+            draw_text("정답입니다!", BLACK, (50, 250))
+            pygame.display.flip()
+            score += 1
         else:
-            sea_level = win_height  # 최대 높이 설정
+            draw_text("틀렸습니다!", BLACK, (50, 250))
+            pygame.display.flip()
 
-    # 해수면 그리기
-    pygame.draw.rect(win, blue, (0, win_height - sea_level, sea_width, sea_level))
+        time.sleep(1)
 
-    # 플레이어 그리기
-    pygame.draw.rect(win, (0, 0, 0), (player_x, player_y, player_width, player_height))
+    draw_text(f"게임 종료! 총 {score}/{len(questions)} 문제를 맞추셨습니다.", BLACK, (50, 300))
+    pygame.display.flip()
+    time.sleep(2)
 
-    # 화면 업데이트
-    pygame.display.update()
-
-# 게임 종료
-pygame.quit()
-sys.exit()
-
-
+if __name__ == "__main__":
+    display_intro()
+    play_game()
