@@ -1,7 +1,7 @@
 import pygame
 import sys
 
-# 파이게임 초기화
+# 파이게임 초기화``
 pygame.init()
 
 # 창 크기 설정

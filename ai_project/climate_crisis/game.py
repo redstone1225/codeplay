@@ -8,7 +8,9 @@ pygame.init()
 # 한글 폰트 설정
 font_path = "ai_project/climate_crisis/src/NanumGothicEco.ttf"  # 여기에 사용하고자 하는 폰트 파일의 경로를 입력하세요
 font_size = 24
+font_size2 = 40
 font = pygame.font.Font(font_path, font_size)
+font2 = pygame.font.Font(font_path, font_size2)
 
 # 색깔 정의
 WHITE = (255, 255, 255)
@@ -21,6 +23,10 @@ pygame.display.set_caption("O/X 퀴즈 게임")
 
 def draw_text(text, color, position):
     text_surface = font.render(text, True, color)
+    screen.blit(text_surface, position)
+    
+def draw_text2(text, color, position):
+    text_surface = font2.render(text, True, color)
     screen.blit(text_surface, position)
 
 def display_intro():
@@ -56,16 +62,16 @@ def display_intro():
 
     # 두 번째 텍스트 및 이미지 표시
     draw_text("지구의 기온은 올라갈 수 밖에 없다. 우리는 지구 기온이 올라가면 그에 대한 방안을 만들어내고 잘 극복해 나가면 된다.", BLACK, (40, 30))
-    draw_text("잘 극복해 나가면 된다. 그러기 위해서는 지구온난화가 발생하면 우리 생활이 어떻게 변화하고 환경이 어떻게 변하는지 알아야 한다.", BLACK, (40, 70))
-    draw_text("환경이 어떻게 변하는지 알아야 한다.", BLACK, (40, 110))
+    draw_text("잘 극복해 나가면 된다. 그러기 위해서는 지구온난화가 발생하면 우리 생활이 어떻게 변화하고 환경이 어떻게", BLACK, (40, 70))
+    draw_text("변하는지 알아야 한다. 환경이 어떻게 변하는지 알아야 한다.", BLACK, (40, 110))
     draw_text("그래서 O,X 퀴즈로 재미있게 알아보자!!", BLACK, (40, 150))
     draw_text("다음으로 넘기려면 ENTER를 누르시오.", BLACK, (40, 190))
 
-    image_path2 = 'ai_project/climate_crisis/src/bg2.png'  # 두 번째 이미지 파일의 경로를 입력하세요
+    image_path2 = 'ai_project/climate_crisis/src/img.png'  # 두 번째 이미지 파일의 경로를 입력하세요
     if os.path.exists(image_path2):
         original_image2 = pygame.image.load(image_path2)
-        resized_image2 = pygame.transform.scale(original_image2, (700, 500))  # 원하는 크기로 조절
-        screen.blit(resized_image2, (250, 210))  # 이미지 위치 조절
+        resized_image2 = pygame.transform.scale(original_image2, (800, 500))  # 원하는 크기로 조절
+        screen.blit(resized_image2, (200, 240))  # 이미지 위치 조절
 
     pygame.display.flip()
 
@@ -102,20 +108,22 @@ def ask_question(question, correct_answer):
 
 def play_game():
     score = 0
+    
 
-    questions = [
-        ("극지방의 빙하가 녹아 해수면 상승이 가속화될 것이다 (O/X)", "O"),
-        ("해안가에 상어가 더 많이 출몰할 것이다. (O/X)", "O"),
-        ("인간이 체온 조절 능력을 잃을 것이다. (O/X)", "O"),
-        ("온난화로 인해 이산화탄소 농도가 감소하고 해수면 산성화가 발생할 수 있습니다. (O/X)", "X"), 
+    questions_with_images = [
+        ("극지방의 빙하가 녹아 해수면 상승이 가속화될 것이다 (O/X)", "O", "ai_project/climate_crisis/src/ekdnsfhem.jpg"),
+        ("해안가에 상어가 더 많이 출몰할 것이다. (O/X)", "O", "ai_project/climate_crisis/src/shark.jpg"),
+        ("인간이 체온 조절 능력을 잃을 것이다. (O/X)", "O", "ai_project/climate_crisis/src/Heal control.png"),
+        ("온난화로 인해 이산화탄소 농도가 감소하고 해수면 산성화가 발생할 수 있습니다. (O/X)", "X", "ai_project/climate_crisis/src/co2.jpg"), 
         # 감소 하는게 아니다
-        ("온도 상승으로 인해 작물의 생육에 부정적인 영향을 미칠 수 있다.(O/X)", "O"),
-        ("폭염, 폭우 같은 극단적인 이상 기후로 홍수나 산사태 등 자연재해가 빈번하게 발생할 것이다. (O/X)", "O"),
-        ("새로운 생물이 나와 생물 종이 더 다양해 질 것이다. (O/X)", "X"),
+        ("온도 상승으로 인해 작물의 생육에 부정적인 영향을 미칠 수 있다.(O/X)", "O", "ai_project/climate_crisis/src/2222.png"),
+        ("폭염, 폭우 같은 극단적인 이상 기후로 홍수나 산사태 등 자연재해가 빈번하게 발생할 것이다. (O/X)", "O", "ai_project/climate_crisis/src/3333.jpg"),
+        ("새로운 생물이 나와 생물 종이 더 다양해 질 것이다. (O/X)", "X", "ai_project/climate_crisis/src/species.png"),
         # 새로운 종이 나오지만 멸종하는 종이 더 많기 때문에 다양해지지 않는다
     ]
+    num_questions = len(questions_with_images)
 
-    for question, correct_answer in questions:
+    for question_text, correct_answer, image_path in questions_with_images:
         user_answer = None
         while user_answer not in ['O', 'X']:
             for event in pygame.event.get():
@@ -128,9 +136,18 @@ def play_game():
                     elif event.key == pygame.K_x:
                         user_answer = 'X'
 
+            # 화면을 청소하고 새로운 문제와 이미지를 표시합니다.
             screen.fill(WHITE)
-            draw_text(question, BLACK, (50, 50))
+            draw_text(question_text, BLACK, (50, 50))
+            draw_image(image_path, (250, 210))
             draw_text("정답을 입력하세요 (O/X):", BLACK, (50, 150))
+
+            # 사용자가 선택한 답변을 화면에 표시합니다.
+            if user_answer == 'O':
+                draw_text("당신의 선택: O", BLACK, (50, 200))
+            elif user_answer == 'X':
+                draw_text("당신의 선택: X", BLACK, (50, 200))
+
             pygame.display.flip()
 
         if user_answer == correct_answer:
@@ -143,9 +160,22 @@ def play_game():
 
         time.sleep(1)
 
-    draw_text(f"게임 종료! 총 {score}/{len(questions)} 문제를 맞추셨습니다.", BLACK, (50, 300))
+    # 화면을 청소하고 최종 점수를 표시합니다.
+    screen.fill(WHITE)
+    if score == num_questions:
+        draw_text2(f"게임 종료! 축하합니다! 모든 문제를 맞추셨습니다.", BLACK, (200, 80))
+        draw_image("ai_project/climate_crisis/src/healthy earth.jpg", (250, 150))
+    else:
+        draw_text2(f"게임 종료! {score}/{num_questions} 문제를 맞추셨습니다.", BLACK, (280, 80))
+        draw_image("ai_project/climate_crisis/src/melt earth.jpg", (250, 150))
     pygame.display.flip()
     time.sleep(2)
+
+def draw_image(image_path, position):
+    if os.path.exists(image_path):
+        original_image = pygame.image.load(image_path)
+        resized_image = pygame.transform.scale(original_image, (700, 500))  # 이미지 크기 조절
+        screen.blit(resized_image, position)
 
 if __name__ == "__main__":
     display_intro()
