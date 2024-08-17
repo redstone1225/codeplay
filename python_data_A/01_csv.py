@@ -6,6 +6,9 @@ max = -100
 max_date = ""
 min = 100
 min_date = ""
+my_day = "2008-12-25"
+my_birthday = []
+my_temp = []
 for row in data:
     row[0] = row[0].lstrip('\t')
     if row[-1] == '':
@@ -22,3 +25,8 @@ for row in data:
         max_date = row[0]
 print(min, min_date, max, max_date)
 f.close()
+if row[0] == my_day
+
+print(f"최저기온 : {min} 날짜 {min_date}")
+print(f"최고기온 : {max} 날짜 {max_date}")
+print(f"탕탕절 최고기온")
