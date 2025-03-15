@@ -12,7 +12,7 @@ root = tk.Tk()
 root.title("Smart Door Lock")
 
 # 아두이노 연결 설정 (포트와 보드레이트는 실제 환경에 맞게 설정)
-arduino = serial.Serial('COM8', 9600, timeout=1)
+arduino = serial.Serial('COM3', 9600, timeout=1)
 time.sleep(2)  # 아두이노 초기화 시간 대기
 
 # 비밀번호 설정
@@ -22,6 +22,11 @@ entered_password = ""
 # 카메라 피드 업데이트 함수
 def update_frame():
     ret, frame = cap.read()
+    if not ret:
+        lbl_text.config(text="카메라를 찾을 수 없습니다.")
+        root.after(1000, update_frame)
+        return
+
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     faces = face_cascade.detectMultiScale(gray, 1.1, 4)
 
@@ -40,8 +45,10 @@ def read_arduino():
     global entered_password
     if arduino.in_waiting > 0:
         button_value = arduino.readline().decode().strip()
-        if button_value in [str(i) for i in range(1, 13)]:
+        print(f"Arduino button value: {button_value}")  # 디버깅 출력
+        if button_value in [str(i) for i in range(10)] + ['*', '#']:
             on_button_click(button_value)
+            lbl_text.config(text=f"버튼 값: {button_value}")  # Tkinter 라벨에 버튼 값 출력
 
 # 버튼 클릭 이벤트
 def on_button_click(number):
@@ -71,6 +78,9 @@ def reset_door():
 
 # 카메라 설정
 cap = cv2.VideoCapture(0)
+if not cap.isOpened():
+    print("카메라를 열 수 없습니다.")
+    exit()
 
 # Tkinter 위젯 설정
 lbl_text = tk.Label(root, text="", font=("Helvetica", 16))
@@ -88,3 +98,65 @@ root.mainloop()
 # 카메라 해제
 cap.release()
 cv2.destroyAllWindows()
+
+# #include <Servo.h>
+
+# // 아날로그 핀 정의
+# const int ANALOG_PINS[] = {A0, A1, A2, A3};
+# const int NUM_PINS = 4;
+
+# // 버튼 값 임계치 정의
+# const int NO_PRESS = 800;      
+# const int BTN_10K = 700;        
+# const int BTN_1K = 50;        
+# const int BTN_DIRECT = 30;    
+
+# // 각 버튼별 출력 문자 정의
+# const char PIN_VALUES[4][3] = {
+#     {'1', '2', '3'},  
+#     {'4', '5', '6'},  
+#     {'7', '8', '9'},  
+#     {'*', '0', '#'}    
+# };
+
+# void setup() {
+#     Serial.begin(9600);
+#     Serial.println("시스템 시작");
+   
+#     // 아날로그 핀 풀업저항 활성화
+#     for(int i = 0; i < NUM_PINS; i++) {
+#         pinMode(ANALOG_PINS[i], INPUT_PULLUP);
+#     }
+# }
+
+# void loop() {
+#     // 각 아날로그 핀 순회
+#     for(int pin = 0; pin < NUM_PINS; pin++) {
+#         int value = analogRead(ANALOG_PINS[pin]);
+       
+#         // 버튼 입력 판단 및 처리
+#         if(value < NO_PRESS) {  // 버튼 입력이 있는 경우
+#             Serial.print("Pin A");
+#             Serial.print(pin);
+#             Serial.print(" Value: ");
+#             Serial.print(value);
+#             Serial.print(" -> Button: ");
+           
+#             if(value < BTN_DIRECT) {
+#                 Serial.println(PIN_VALUES[pin][0]);  
+#             }
+#             else if(value < BTN_1K) {
+#                 Serial.println(PIN_VALUES[pin][1]);  
+#             }
+#             else if(value < BTN_10K) {
+#                 Serial.println(PIN_VALUES[pin][2]);  
+#             }
+           
+#             // 디바운싱
+#             delay(200);
+#         }
+#         else{
+#           Serial.println("None");
+#         }
+#     }
+# }
